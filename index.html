@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok GMV Profit Calculator (v2)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            margin-bottom: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        input {
+            width: 100%;
+            padding: 5px;
+        }
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .results {
+            background-color: #e7ffe7;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px 0 0;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<h2>TikTok GMV Profit Calculator (v2)</h2>
+
+<div class="section">
+    <table>
+        <tr>
+            <th>SKU Name</th>
+            <th>COGS (RM)</th>
+            <th>Unit Sold</th>
+        </tr>
+        <script>
+            for (let i = 0; i < 6; i++) {
+                document.write(`
+                    <tr>
+                        <td><input type="text" id="sku_${i}"></td>
+                        <td><input type="number" id="cogs_${i}" step="0.01"></td>
+                        <td><input type="number" id="units_${i}"></td>
+                    </tr>
+                `);
+            }
+        </script>
+    </table>
+
+    <label>Total GMV Revenue (RM): <input type="number" id="gmv" step="0.01"></label><br><br>
+    <label>Total Orders (for shipping): <input type="number" id="totalOrders"></label><br><br>
+    <label>Total Refund/Cancelled Orders (RM): <input type="number" id="refunds" step="0.01"></label><br><br>
+    <label>Total Ads Cost (RM): <input type="number" id="adsCost" step="0.01"></label><br><br>
+    <label>TikTok Fee (%): <input type="number" id="ttFee" step="0.01" value="15.66"></label><br><br>
+    <label>Affiliate Fee (RM): <input type="number" id="affFee" step="0.01"></label><br><br>
+
+    <button onclick="calculate()">Kira Profit</button>
+</div>
+
+<div class="results" id="results"></div>
+
+<script>
+    function calculate() {
+        let totalCOGS = 0;
+        for (let i = 0; i < 6; i++) {
+            const cogs = parseFloat(document.getElementById("cogs_" + i).value) || 0;
+            const units = parseFloat(document.getElementById("units_" + i).value) || 0;
+            totalCOGS += cogs * units;
+        }
+
+        const gmv = parseFloat(document.getElementById("gmv").value) || 0;
+        const orders = parseFloat(document.getElementById("totalOrders").value) || 0;
+        const refund = parseFloat(document.getElementById("refunds").value) || 0;
+        const ads = parseFloat(document.getElementById("adsCost").value) || 0;
+        const ttFeePct = parseFloat(document.getElementById("ttFee").value) || 0;
+        const affFee = parseFloat(document.getElementById("affFee").value) || 0;
+
+        const shippingFee = orders * 4.90;
+        const netGMV = gmv - shippingFee - refund;
+        const ttFee = netGMV * (ttFeePct / 100);
+        const profit = netGMV - totalCOGS - ads - ttFee - affFee;
+        const profitMargin = netGMV !== 0 ? (profit / netGMV) * 100 : 0;
+
+        document.getElementById("results").innerHTML = `
+            Total COGS: RM ${totalCOGS.toFixed(2)}<br>
+            Total Shipping Fee Paid: RM ${shippingFee.toFixed(2)}<br>
+            Net GMV: RM ${netGMV.toFixed(2)}<br>
+            TikTok Fee: RM ${ttFee.toFixed(2)}<br>
+            Affiliate Fee: RM ${affFee.toFixed(2)}<br>
+            <strong>Total Profit: RM ${profit.toFixed(2)}</strong><br>
+            <strong>Profit Margin: ${profitMargin.toFixed(2)}%</strong>
+        `;
+    }
+</script>
+
+</body>
+</html>
